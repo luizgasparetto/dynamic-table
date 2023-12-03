@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/helpers/debouncer.dart';
-import '../../domain/models/cell_model.dart';
-import '../../domain/models/column_model.dart';
+import '../../domain/models/submodels/column_model.dart';
+import '../../domain/models/submodels/row_model.dart';
 import '../../domain/models/table_model.dart';
 
 class TableWidget extends StatefulWidget {
@@ -21,20 +21,10 @@ class TableWidget extends StatefulWidget {
 
 class TableWidgetState extends State<TableWidget> {
   List<ColumnModel> get columns => widget.table.columns;
-  List<List<CellModel>> get rows => widget.table.rows;
+  List<RowModel> get rows => widget.table.rows;
 
   final _debouncer = Debouncer.medium();
   late final copyRows = TableModel.copyRows(rows);
-
-  // List<TextInputFormatter> _getInputFormatters(ColumnType type) {
-  //   return switch (type) {
-  //     ColumnType.number => [
-  //         FilteringTextInputFormatter.digitsOnly,
-  //         ThousandsFormatter()
-  //       ],
-  //     _ => [],
-  //   };
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +51,10 @@ class TableWidgetState extends State<TableWidget> {
           rows: List.generate(
             copyRows.length,
             (rowIndex) => DataRow(
-              cells: List.generate(copyRows[rowIndex].length, (cellIndex) {
+              cells:
+                  List.generate(copyRows[rowIndex].cells.length, (cellIndex) {
                 final column = columns[cellIndex];
-                final cell = copyRows[rowIndex][cellIndex];
+                final cell = copyRows[rowIndex].cells[cellIndex];
 
                 return DataCell(
                   TextFormField(
@@ -76,7 +67,7 @@ class TableWidgetState extends State<TableWidget> {
                     ),
                     onChanged: (val) {
                       setState(() {
-                        copyRows[rowIndex][cellIndex] = cell.substitute(
+                        copyRows[rowIndex].cells[cellIndex] = cell.substitute(
                           val,
                           type: column.type,
                         );
@@ -95,13 +86,18 @@ class TableWidgetState extends State<TableWidget> {
           child: const Icon(Icons.add),
           onPressed: () {
             setState(() {
-              copyRows.add(
-                List.generate(
-                  columns.length,
-                  (_) => CellModel.empty(),
-                ),
-              );
+              copyRows.add(RowModel.generate(columns.length));
             });
+          },
+        ),
+        FloatingActionButton.small(
+          child: const Icon(Icons.save),
+          onPressed: () {
+            final table = widget.table.copyWith(rows: copyRows);
+
+            table.format();
+
+            print(table.rows.length);
           },
         ),
       ],

@@ -1,4 +1,4 @@
-import '../enums/column_type.dart';
+import '../../enums/column_type.dart';
 
 class CellModel {
   final dynamic value;

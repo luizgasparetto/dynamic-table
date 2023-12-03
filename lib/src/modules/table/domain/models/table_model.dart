@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-
-import 'cell_model.dart';
-import 'column_model.dart';
-import 'row_model.dart';
+import 'submodels/column_model.dart';
+import 'submodels/row_model.dart';
 
 class TableModel {
   final String name;
@@ -15,7 +13,19 @@ class TableModel {
     required this.rows,
   });
 
-  static List<List<CellModel>> copyRows(List<List<CellModel>> rows) {
-    return List<List<CellModel>>.from(rows.map((e) => List<CellModel>.from(e)));
+  static List<RowModel> copyRows(List<RowModel> rows) {
+    return List<RowModel>.from(rows.map((e) => RowModel(cells: e.cells)));
+  }
+
+  void format() {
+    rows.removeWhere((e) => e.cells.every((e) => e.isEmpty));
+  }
+
+  TableModel copyWith({List<RowModel>? rows}) {
+    return TableModel(
+      name: name,
+      columns: columns,
+      rows: rows ?? this.rows,
+    );
   }
 }

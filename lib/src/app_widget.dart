@@ -8,24 +8,9 @@ class AppWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return MaterialApp(
-    //   home: Scaffold(
-    //     body: SingleChildScrollView(
-    //       child: Column(
-    //         children: [
-    //           const SizedBox(height: 128),
-    //           TableWidget(
-    //             table: table,
-    //             onSave: () => print('Salvou no KVS'),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
     return MaterialApp.router(
       title: 'Dynamic Table',
-      theme: ThemeData.dark(),
+      //theme: ThemeData.light(),
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
     );

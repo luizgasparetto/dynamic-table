@@ -1,6 +1,5 @@
-import '../../domain/models/column_model.dart';
-
-import 'enums/column_type_adapter.dart';
+import '../../../../domain/models/submodels/column_model.dart';
+import '../../enums/column_type_adapter.dart';
 
 class ColumnAdapter {
   static List<ColumnModel> fromMapJson(Map<String, dynamic> json) {
@@ -16,5 +15,13 @@ class ColumnAdapter {
       subtype: json['subtype'],
       isEditable: json['is_editable'],
     );
+  }
+
+  static Map<String, dynamic> toJson(ColumnModel column) {
+    return {
+      'name': column.name,
+      'is_editable': column.isEditable,
+      'type': ColumnTypeAdapter.getString(column.type),
+    };
   }
 }

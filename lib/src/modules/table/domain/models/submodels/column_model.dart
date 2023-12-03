@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import '../enums/column_type.dart';
+import '../../enums/column_type.dart';
 
 class ColumnModel {
   final String name;
