@@ -7,7 +7,7 @@ import '../../domain/models/table_model.dart';
 
 class TableWidget extends StatefulWidget {
   final TableModel table;
-  final VoidCallback onSave;
+  final void Function(TableModel) onSave;
 
   const TableWidget({
     super.key,
@@ -67,13 +67,15 @@ class TableWidgetState extends State<TableWidget> {
                     ),
                     onChanged: (val) {
                       setState(() {
-                        copyRows[rowIndex].cells[cellIndex] = cell.substitute(
-                          val,
-                          type: column.type,
-                        );
+                        final newCell = cell.substitute(val, type: column.type);
+                        copyRows[rowIndex].cells[cellIndex] = newCell;
                       });
 
-                      _debouncer.run(widget.onSave);
+                      _debouncer.run(
+                        () => widget.onSave(
+                          widget.table.substituteRows(copyRows),
+                        ),
+                      );
                     },
                   ),
                 );
@@ -88,16 +90,6 @@ class TableWidgetState extends State<TableWidget> {
             setState(() {
               copyRows.add(RowModel.generate(columns.length));
             });
-          },
-        ),
-        FloatingActionButton.small(
-          child: const Icon(Icons.save),
-          onPressed: () {
-            final table = widget.table.copyWith(rows: copyRows);
-
-            table.format();
-
-            print(table.rows.length);
           },
         ),
       ],

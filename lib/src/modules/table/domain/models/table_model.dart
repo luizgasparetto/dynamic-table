@@ -17,11 +17,16 @@ class TableModel {
     return List<RowModel>.from(rows.map((e) => RowModel(cells: e.cells)));
   }
 
-  void format() {
+  TableModel format() {
     rows.removeWhere((e) => e.cells.every((e) => e.isEmpty));
+    return this;
   }
 
-  TableModel copyWith({List<RowModel>? rows}) {
+  TableModel substituteRows(List<RowModel> rows) {
+    return _copyWith(rows: rows);
+  }
+
+  TableModel _copyWith({List<RowModel>? rows}) {
     return TableModel(
       name: name,
       columns: columns,
