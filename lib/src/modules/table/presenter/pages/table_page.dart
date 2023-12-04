@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:multi_table/src/modules/table/domain/models/table_model.dart';
 
-import '../../../../core/data/example.dart';
-import '../../data/adapters/models/table_adapter.dart';
+import '../../../../core/helpers/debouncer.dart';
 import '../../domain/usecases/fetch_table_usecase.dart';
 import '../../domain/usecases/save_table_usecase.dart';
 import '../widgets/dynamic_table_widget.dart';
@@ -17,28 +17,41 @@ class TablePage extends StatefulWidget {
 }
 
 class _TablePageState extends State<TablePage> {
-  final table = TableAdapter.fromJson(jsonExample);
+  late TableModel _table;
 
   final fetchUsecase = Modular.get<IFetchTableUsecase>();
   final saveUsecase = Modular.get<ISaveTableUsecase>();
 
+  void _setTable(TableModel table) => _table = table;
+
   @override
   Widget build(BuildContext context) {
+    final debouncer = Debouncer.medium();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: FutureBuilder(
           future: fetchUsecase.fetch(),
           builder: (_, snapshot) {
             if (snapshot.hasData) {
+              _setTable(snapshot.data!);
+
               return Column(
                 children: [
                   const SizedBox(height: 128),
-                  TableWidget(
-                    table: snapshot.data!,
-                    onSave: (newTable) async {
-                      await saveUsecase.execute(newTable);
-                      print('Salvou no KVS!');
-                    },
+                  Center(
+                    child: TableWidget(
+                      table: snapshot.data!,
+                      onSave: (newTable) {
+                        debouncer.run(() async {
+                          await saveUsecase.execute(
+                            _table,
+                            newTable,
+                            () => _setTable(newTable),
+                          );
+                        });
+                      },
+                    ),
                   ),
                 ],
               );

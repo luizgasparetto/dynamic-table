@@ -10,4 +10,14 @@ class RowModel {
   factory RowModel.generate(int quantity) {
     return RowModel(cells: List.generate(quantity, (_) => CellModel.empty()));
   }
+
+  bool get isEmpty => cells.every((e) => e.value == null || e.value.isEmpty);
+
+  List<CellModel> generate() {
+    final newCells = cells.map(
+      (e) => CellModel(value: e.value, isEditable: e.isEditable),
+    );
+
+    return newCells.toList();
+  }
 }

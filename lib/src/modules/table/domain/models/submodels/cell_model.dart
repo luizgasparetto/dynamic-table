@@ -24,8 +24,6 @@ class CellModel {
 
   int _parseNumber(String value) => int.parse(value.replaceAll('.', ''));
 
-  bool get isEmpty => value == null || value.isEmpty;
-
   CellModel _copyWith({dynamic value}) {
     return CellModel(
       value: value ?? this.value,

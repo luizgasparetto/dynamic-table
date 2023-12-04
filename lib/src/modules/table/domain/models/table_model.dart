@@ -14,11 +14,11 @@ class TableModel {
   });
 
   static List<RowModel> copyRows(List<RowModel> rows) {
-    return List<RowModel>.from(rows.map((e) => RowModel(cells: e.cells)));
+    return List<RowModel>.from(rows.map((e) => RowModel(cells: e.generate())));
   }
 
   TableModel format() {
-    rows.removeWhere((e) => e.cells.every((e) => e.isEmpty));
+    rows.removeWhere((e) => e.isEmpty);
     return this;
   }
 

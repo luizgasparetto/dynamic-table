@@ -14,14 +14,4 @@ class ColumnModel {
     this.subtype,
     this.isEditable = false,
   });
-
-  @override
-  bool operator ==(covariant ColumnModel other) {
-    if (identical(this, other)) return true;
-
-    return other.name == name && other.type == type;
-  }
-
-  @override
-  int get hashCode => name.hashCode ^ type.hashCode;
 }
