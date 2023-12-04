@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:multi_table/src/modules/table/domain/models/table_model.dart';
+import 'package:multi_table/src/modules/table/presenter/controllers/save_table_controller.dart';
+import 'package:multi_table/src/modules/table/presenter/controllers/states/fetch_table_state.dart';
+import 'package:multi_table/src/modules/table/presenter/controllers/fetch_table_controller.dart';
 
 import '../../../../core/helpers/debouncer.dart';
-import '../../domain/usecases/fetch_table_usecase.dart';
-import '../../domain/usecases/save_table_usecase.dart';
 import '../widgets/dynamic_table_widget.dart';
 
 class TablePage extends StatefulWidget {
@@ -17,12 +17,14 @@ class TablePage extends StatefulWidget {
 }
 
 class _TablePageState extends State<TablePage> {
-  late TableModel _table;
+  final fetchController = Modular.get<FetchTableController>();
+  final saveController = Modular.get<SaveTableController>();
 
-  final fetchUsecase = Modular.get<IFetchTableUsecase>();
-  final saveUsecase = Modular.get<ISaveTableUsecase>();
-
-  void _setTable(TableModel table) => _table = table;
+  @override
+  void initState() {
+    super.initState();
+    fetchController.fetch();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,25 +32,19 @@ class _TablePageState extends State<TablePage> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: FutureBuilder(
-          future: fetchUsecase.fetch(),
-          builder: (_, snapshot) {
-            if (snapshot.hasData) {
-              _setTable(snapshot.data!);
-
+        child: ValueListenableBuilder<FetchTableState>(
+          valueListenable: fetchController,
+          builder: (_, state, __) {
+            if (state is SuccessFetchTableState) {
               return Column(
                 children: [
                   const SizedBox(height: 128),
                   Center(
                     child: TableWidget(
-                      table: snapshot.data!,
+                      table: state.table,
                       onSave: (newTable) {
                         debouncer.run(() async {
-                          await saveUsecase.execute(
-                            _table,
-                            newTable,
-                            () => _setTable(newTable),
-                          );
+                          await saveController.save(newTable);
                         });
                       },
                     ),

@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 import '../../domain/usecases/fetch_table_usecase.dart';
-import 'states/table_state.dart';
+import 'states/fetch_table_state.dart';
 
-class TableController extends ValueNotifier<TableState> {
+class FetchTableController extends ValueNotifier<FetchTableState> {
   final IFetchTableUsecase _fetchUsecase;
 
-  TableController(this._fetchUsecase) : super(InitialTableState());
+  FetchTableController(this._fetchUsecase) : super(InitialFetchTableState());
 
   Future<void> fetch() async {
     final response = await _fetchUsecase.fetch();
-    value = SuccessTableState(response);
+    value = SuccessFetchTableState(response);
   }
 }

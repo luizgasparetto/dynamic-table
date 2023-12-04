@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'submodels/column_model.dart';
 import 'submodels/row_model.dart';
 
