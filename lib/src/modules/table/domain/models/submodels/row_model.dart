@@ -11,7 +11,13 @@ class RowModel {
     return RowModel(cells: List.generate(quantity, (_) => CellModel.empty()));
   }
 
-  bool get isEmpty => cells.every((e) => e.value == null || e.value.isEmpty);
+  int getCellIndex(CellModel cell) {
+    return cells.indexOf(cell);
+  }
+
+  bool isLastCell(int cellIndex) {
+    return cellIndex == cells.length - 1;
+  }
 
   List<CellModel> generate() {
     final newCells = cells.map(
@@ -19,5 +25,9 @@ class RowModel {
     );
 
     return newCells.toList();
+  }
+
+  bool get isEmpty {
+    return cells.every((e) => e.value == null || e.value.isEmpty);
   }
 }

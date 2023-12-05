@@ -25,6 +25,9 @@ class TableModel {
     return _copyWith(rows: rows);
   }
 
+  int getRowIndex(RowModel row) => rows.indexOf(row);
+  bool isLastRow(int rowIndex) => rowIndex == rows.length - 1;
+
   TableModel _copyWith({List<RowModel>? rows}) {
     return TableModel(
       name: name,

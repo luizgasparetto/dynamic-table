@@ -5,8 +5,10 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:multi_table/src/modules/table/presenter/controllers/save_table_controller.dart';
 import 'package:multi_table/src/modules/table/presenter/controllers/states/fetch_table_state.dart';
 import 'package:multi_table/src/modules/table/presenter/controllers/fetch_table_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/helpers/debouncer.dart';
+import '../widgets/dynamic_table_widget._old.dart';
 import '../widgets/dynamic_table_widget.dart';
 
 class TablePage extends StatefulWidget {
@@ -40,15 +42,15 @@ class _TablePageState extends State<TablePage> {
                 children: [
                   const SizedBox(height: 128),
                   Center(
-                    child: TableWidget(
+                    child: DynamicTableWidget(
                       table: state.table,
-                      onSave: (newTable) {
+                      onChanged: (newTable) {
                         debouncer.run(() async {
                           await saveController.save(newTable);
                         });
                       },
                     ),
-                  ),
+                  )
                 ],
               );
             }

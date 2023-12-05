@@ -21,12 +21,16 @@ class RowAdapter {
     List<dynamic> values,
     List<ColumnModel> columns,
   ) {
-    final cells = values.map(
-      (value) => CellModel(
-        value: value,
-        isEditable: columns[values.indexOf(value)].isEditable,
-      ),
-    );
+    final cells = <CellModel>[];
+
+    for (int i = 0; i < values.length; i++) {
+      cells.add(
+        CellModel(
+          value: values[i],
+          isEditable: columns[i].isEditable,
+        ),
+      );
+    }
 
     return RowModel(cells: cells.toList());
   }

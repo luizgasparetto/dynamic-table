@@ -8,6 +8,8 @@ class DynamicCellWidget extends StatelessWidget {
   final bool isEditable;
   final void Function(String)? onChanged;
   final ColumnType type;
+  final bool useLeftRadius;
+  final bool useRightRadius;
 
   const DynamicCellWidget({
     super.key,
@@ -15,6 +17,8 @@ class DynamicCellWidget extends StatelessWidget {
     required this.isEditable,
     required this.onChanged,
     required this.type,
+    this.useLeftRadius = false,
+    this.useRightRadius = false,
   });
 
   List<TextInputFormatter> get formatters {
@@ -34,16 +38,25 @@ class DynamicCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: initialValue,
-      enabled: isEditable,
-      textAlign: TextAlign.center,
-      onChanged: onChanged,
-      inputFormatters: formatters,
-      keyboardType: keyboardType,
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.all(16),
+    return Container(
+      decoration: BoxDecoration(
+        color: !isEditable ? Colors.grey.withOpacity(0.5) : null,
+        borderRadius: BorderRadius.only(
+          bottomLeft: useLeftRadius ? const Radius.circular(16) : Radius.zero,
+          bottomRight: useRightRadius ? const Radius.circular(16) : Radius.zero,
+        ),
+      ),
+      child: TextFormField(
+        initialValue: initialValue,
+        enabled: isEditable,
+        textAlign: TextAlign.center,
+        onChanged: onChanged,
+        inputFormatters: formatters,
+        keyboardType: keyboardType,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.all(16),
+        ),
       ),
     );
   }
