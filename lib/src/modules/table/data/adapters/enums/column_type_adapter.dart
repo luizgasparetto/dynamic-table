@@ -9,7 +9,7 @@ class ColumnTypeAdapter {
     };
   }
 
-  static String getString(ColumnType type) {
+  static String parseString(ColumnType type) {
     return switch (type) {
       ColumnType.text => 'text',
       ColumnType.number => 'numeric',

@@ -21,7 +21,7 @@ class ColumnAdapter {
     return {
       'name': column.name,
       'is_editable': column.isEditable,
-      'type': ColumnTypeAdapter.getString(column.type),
+      'type': ColumnTypeAdapter.parseString(column.type),
     };
   }
 }

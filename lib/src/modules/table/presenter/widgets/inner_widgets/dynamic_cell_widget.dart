@@ -70,7 +70,6 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
               ),
             ),
             onChanged: (value) {
-              isValidState.value = value == '22:00';
               widget.onChanged.call(value);
             },
           );
@@ -101,7 +100,11 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
   List<TextInputFormatter> get formatters {
     return switch (widget.type) {
       ColumnType.number => [FilteringTextInputFormatter.digitsOnly],
-      _ => [TimeInputFormatter()],
+      _ => [],
     };
   }
 }
+
+
+
+// TimeInputFormatter();

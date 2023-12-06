@@ -12,7 +12,7 @@ class SaveTableUsecase implements ISaveTableUsecase {
 
   @override
   Future<void> execute(TableModel table) async {
-    await _repository.save(table);
+    await _repository.save(table.format());
     print('Salvei');
   }
 }
