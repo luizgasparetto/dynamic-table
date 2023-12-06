@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 import 'submodels/column_model.dart';
 import 'submodels/row_model.dart';
 
@@ -16,14 +18,17 @@ class TableModel {
     return List<RowModel>.from(rows.map((e) => RowModel(cells: e.generate())));
   }
 
+  TableModel substituteRows(List<RowModel> rows) {
+    return _copyWith(rows: rows);
+  }
+
   TableModel format() {
     rows.removeWhere((e) => e.isEmpty);
     return this;
   }
 
-  TableModel substituteRows(List<RowModel> rows) {
-    return _copyWith(rows: rows);
-  }
+  int getRowIndex(RowModel row) => rows.indexOf(row);
+  bool isLastRow(int rowIndex) => rowIndex == rows.length - 1;
 
   TableModel _copyWith({List<RowModel>? rows}) {
     return TableModel(

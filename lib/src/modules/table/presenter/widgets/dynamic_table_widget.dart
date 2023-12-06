@@ -1,147 +1,110 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:multi_table/src/core/helpers/debouncer.dart';
 
 import '../../domain/models/submodels/column_model.dart';
 import '../../domain/models/submodels/row_model.dart';
 import '../../domain/models/table_model.dart';
-import 'inner_widgets/dynamic_cell_widget.dart'; // Importe seus modelos e widgets personalizados
+import 'inner_widgets/dynamic_cell_widget.dart';
+import 'inner_widgets/table_tag_title_widget.dart';
 
-class TableWidget extends StatefulWidget {
+class DynamicTableWidget extends StatefulWidget {
   final TableModel table;
-  final void Function(TableModel newTable) onSave;
+  final void Function(TableModel newTable) onChanged;
 
-  const TableWidget({
+  const DynamicTableWidget({
     super.key,
     required this.table,
-    required this.onSave,
+    required this.onChanged,
   });
 
   @override
-  TableWidgetState createState() => TableWidgetState();
+  State<DynamicTableWidget> createState() => _DynamicTableWidgetState();
 }
 
-class TableWidgetState extends State<TableWidget> {
-  List<ColumnModel> get columns => widget.table.columns;
-  List<RowModel> get rows => widget.table.rows;
+class _DynamicTableWidgetState extends State<DynamicTableWidget> {
+  TableModel get table => widget.table;
+  List<ColumnModel> get columns => table.columns;
+  List<RowModel> get rows => table.rows;
 
   late final copyRows = TableModel.copyRows(rows);
-  final GlobalKey _tableKey = GlobalKey();
-  double _tableWidth = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateTableWidth());
-  }
-
-  void _updateTableWidth() {
-    final renderBoxTable = _tableKey.currentContext?.findRenderObject();
-
-    if (renderBoxTable != null) {
-      final box = renderBoxTable as RenderBox;
-
-      setState(() {
-        _tableWidth = box.size.width;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Visibility(
-          visible: _tableWidth != 0,
-          child: Container(
-            width: _tableWidth,
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
-            ),
-            child: InkWell(
-              onTap: () => print('Adicionei'),
-              child: const Text(
-                'Adicionar',
-                textAlign: TextAlign.end,
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+    return IntrinsicWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TableTagTitleWidget(
+            text: 'Adicionar linha',
+            onPressed: () {
+              setState(() {
+                copyRows.add(RowModel.generate(columns.length));
+              });
+            },
           ),
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            key: _tableKey,
+          Table(
+            defaultColumnWidth: const IntrinsicColumnWidth(),
             border: TableBorder.all(
+              color: Colors.grey.withOpacity(0.5),
+              width: 2,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
+                bottomRight: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
               ),
             ),
-            columns: List.generate(columns.length + 1, (index) {
-              if (index == columns.length) {
-                return DataColumn(label: Container());
-              }
+            children: [
+              TableRow(
+                children: columns
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(e.name),
+                        ))
+                    .toList(),
+              ),
+              ...List.generate(
+                copyRows.length,
+                (rowIndex) {
+                  final row = copyRows[rowIndex];
+                  final isLastRow = rowIndex == copyRows.length - 1;
 
-              return DataColumn(
-                label: Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      columns[index].name,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              );
-            }),
-            rows: List.generate(copyRows.length, (rowIndex) {
-              final length = copyRows[rowIndex].cells.length + 1;
+                  return TableRow(
+                    children: List.generate(
+                      row.cells.length,
+                      (cellIndex) {
+                        final cell = row.cells[cellIndex];
+                        final column = columns[cellIndex];
 
-              return DataRow(
-                cells: List.generate(length, (cellIndex) {
-                  if (cellIndex == copyRows[rowIndex].cells.length) {
-                    return DataCell(
-                      InkWell(
-                        onTap: () => print('tapiei'),
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        child: const Icon(Icons.more_vert),
-                      ),
-                    );
-                  }
+                        final isFirstCell = cellIndex == 0;
+                        final isLastCell = row.isLastCell(cellIndex);
 
-                  final column = columns[cellIndex];
-                  final cell = copyRows[rowIndex].cells[cellIndex];
+                        return DynamicCellWidget(
+                          initialValue: cell.value.toString(),
+                          isEditable: cell.isEditable,
+                          type: column.type,
+                          useLeftRadius: isLastRow && isFirstCell,
+                          useRightRadius: isLastRow && isLastCell,
+                          onChanged: (val) {
+                            final sub = cell.substitute(val, type: column.type);
 
-                  return DataCell(
-                    DynamicCellWidget(
-                      initialValue: cell.value.toString(),
-                      isEditable: cell.isEditable,
-                      type: column.type,
-                      onChanged: (val) {
-                        setState(() {
-                          final newCell =
-                              cell.substitute(val, type: column.type);
-                          copyRows[rowIndex].cells[cellIndex] = newCell;
-                        });
+                            /// PQ isso aqui ta bugado quando vai em linhas diferentes??
+                            copyRows[rowIndex].cells[cellIndex] = sub;
 
-                        _updateTableWidth();
+                            final newTable = table.substituteRows(copyRows);
 
-                        widget.onSave(widget.table.substituteRows(copyRows));
+                            widget.onChanged(newTable);
+                          },
+                        );
                       },
                     ),
                   );
-                }),
-              );
-            }),
-          ),
-        ),
-      ],
+                },
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

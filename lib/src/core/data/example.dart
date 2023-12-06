@@ -1,4 +1,5 @@
 final jsonExample = {
+  "name": "Table 1.0.0-alpha",
   "columns": [
     {
       "is_editable": false,
@@ -33,10 +34,9 @@ final jsonExample = {
       "type": "text"
     },
   ],
-  "name": "Table 1.0.0-alpha",
   "rows": [
-    ["Luiz", "luiz@gmail.com", 9000, '88220-000', 'Yandeh'],
-    ["Artur", "artur@gmail.com", 10000, '88220-000', 'Yandeh'],
-    ["Felipe", "felipe@gmail.com", 100000, '88220-000', 'Yandeh']
+    ["Luiz", "luiz@gmail.com", 9000, '88220-000', 'Empresa 1'],
+    ["Artur", "artur@gmail.com", 10000, '88220-000', 'Empresa 2'],
+    ["Felipe", "felipe@gmail.com", 100000, '88220-000', 'Empresa 3']
   ]
 };
