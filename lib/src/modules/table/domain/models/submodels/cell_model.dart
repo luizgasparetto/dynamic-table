@@ -13,6 +13,8 @@ class CellModel {
     return const CellModel(value: '', isEditable: true);
   }
 
+  bool get isWithoutValue => value == null || value.isEmpty;
+
   CellModel substitute(String value, {required ColumnType type}) {
     final parsedValue = switch (type) {
       ColumnType.number => value.isNotEmpty ? _parseNumber(value) : null,

@@ -8,7 +8,6 @@ import 'package:multi_table/src/modules/table/presenter/controllers/fetch_table_
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/helpers/debouncer.dart';
-import '../widgets/dynamic_table_widget._old.dart';
 import '../widgets/dynamic_table_widget.dart';
 
 class TablePage extends StatefulWidget {

@@ -27,6 +27,9 @@ class TableTagTitleWidget extends StatelessWidget {
       child: Align(
         alignment: textAlignment,
         child: InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
           onTap: onPressed,
           child: Text(
             text,

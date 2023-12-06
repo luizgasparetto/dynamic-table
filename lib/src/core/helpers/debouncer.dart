@@ -3,15 +3,19 @@ import 'dart:async';
 import 'package:flutter/scheduler.dart';
 
 class Debouncer {
-  final int seconds;
+  final int milliseconds;
 
   VoidCallback? action;
   Timer? _timer;
 
-  Debouncer({required this.seconds});
+  Debouncer({required this.milliseconds});
 
   factory Debouncer.medium() {
-    return Debouncer(seconds: 3);
+    return Debouncer(milliseconds: 3000); // 3 seconds
+  }
+
+  factory Debouncer.fast() {
+    return Debouncer(milliseconds: 100);
   }
 
   run(VoidCallback action) {
@@ -19,6 +23,6 @@ class Debouncer {
       _timer!.cancel();
     }
 
-    _timer = Timer(Duration(seconds: seconds), action);
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }

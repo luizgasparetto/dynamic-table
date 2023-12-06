@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:multi_table/src/core/helpers/debouncer.dart';
 
 import '../../domain/models/submodels/column_model.dart';
 import '../../domain/models/submodels/row_model.dart';
@@ -84,6 +87,8 @@ class _DynamicTableWidgetState extends State<DynamicTableWidget> {
                           useRightRadius: isLastRow && isLastCell,
                           onChanged: (val) {
                             final sub = cell.substitute(val, type: column.type);
+
+                            /// PQ isso aqui ta bugado quando vai em linhas diferentes??
                             copyRows[rowIndex].cells[cellIndex] = sub;
 
                             final newTable = table.substituteRows(copyRows);
