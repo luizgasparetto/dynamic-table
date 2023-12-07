@@ -25,6 +25,8 @@ class _TablePageState extends State<TablePage> {
   void initState() {
     super.initState();
     fetchController.fetch();
+
+    //SharedPreferences.getInstance().then((value) => value.clear());
   }
 
   @override

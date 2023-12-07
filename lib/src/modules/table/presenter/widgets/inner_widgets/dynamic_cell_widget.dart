@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:multi_table/src/modules/table/presenter/widgets/validators/dtos/dynamic_validator_dto.dart';
 
 import '../../../domain/enums/column_type.dart';
-import '../formatters/time_formatter.dart';
+import '../../../domain/enums/sub_column_type.dart';
+import '../validators/dynamic_validator_root.dart';
 
 class DynamicCellWidget extends StatefulWidget {
   final String initialValue;
-  final bool isEditable;
-  final void Function(String) onChanged;
   final ColumnType type;
+  final SubColumnType subtype;
+  final bool isUnique;
+  final bool isEditable;
+  final void Function(String value) onChanged;
   final bool useLeftRadius;
   final bool useRightRadius;
   final double radius;
@@ -19,6 +23,8 @@ class DynamicCellWidget extends StatefulWidget {
     required this.isEditable,
     required this.onChanged,
     required this.type,
+    required this.subtype,
+    this.isUnique = false,
     this.useLeftRadius = false,
     this.useRightRadius = false,
     this.radius = 16,
@@ -29,6 +35,9 @@ class DynamicCellWidget extends StatefulWidget {
 }
 
 class _DynamicCellWidgetState extends State<DynamicCellWidget> {
+  ColumnType get type => widget.type;
+  SubColumnType get subtype => widget.subtype;
+
   final isValidState = ValueNotifier<bool>(true);
 
   @override
@@ -41,7 +50,7 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: !widget.isEditable ? Colors.grey.withOpacity(0.5) : null,
+        color: !widget.isEditable ? const Color(0xFFEFEFEF) : null,
         borderRadius: BorderRadius.only(
           bottomLeft: getRadius(widget.useLeftRadius),
           bottomRight: getRadius(widget.useRightRadius),
@@ -57,6 +66,7 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
             inputFormatters: formatters,
             keyboardType: keyboardType,
             cursorColor: cursorColor,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.all(16),
               filled: true,
@@ -68,9 +78,25 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
                   bottomRight: getRadius(widget.useRightRadius),
                 ),
               ),
+              errorStyle: const TextStyle(height: 0),
             ),
             onChanged: (value) {
+              //final response = validate(value);
+              //isValidState.value = response;
+
               widget.onChanged.call(value);
+            },
+            validator: (value) {
+              final isValid = value == 'luiz';
+
+              //Future.microtask(() => isValidState.value = isValid);
+
+              // Future.delayed(
+              //   const Duration(milliseconds: 300),
+              //   () => isValidState.value = isValid,
+              // );
+
+              // return isValid ? null : '';
             },
           );
         },
@@ -104,7 +130,3 @@ class _DynamicCellWidgetState extends State<DynamicCellWidget> {
     };
   }
 }
-
-
-
-// TimeInputFormatter();

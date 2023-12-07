@@ -19,19 +19,22 @@ final jsonExample = {
       "is_editable": true,
       "is_nullable": false,
       "name": "Salário",
+      "subtype": null,
       "type": "numeric"
     },
     {
       "is_editable": false,
       "is_nullable": false,
       "name": "Zipcode",
-      "type": "text"
+      "type": "text",
+      "subtype": null,
     },
     {
       "is_editable": true,
       "is_nullable": false,
       "name": "Empresa",
-      "type": "text"
+      "type": "text",
+      "subtype": null,
     },
   ],
   "rows": [

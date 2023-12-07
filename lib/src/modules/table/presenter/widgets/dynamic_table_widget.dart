@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:multi_table/src/core/helpers/debouncer.dart';
 
 import '../../domain/models/submodels/column_model.dart';
 import '../../domain/models/submodels/row_model.dart';
@@ -30,6 +27,8 @@ class _DynamicTableWidgetState extends State<DynamicTableWidget> {
 
   late final copyRows = TableModel.copyRows(rows);
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return IntrinsicWidth(
@@ -44,62 +43,83 @@ class _DynamicTableWidgetState extends State<DynamicTableWidget> {
               });
             },
           ),
-          Table(
-            defaultColumnWidth: const IntrinsicColumnWidth(),
-            border: TableBorder.all(
-              color: Colors.grey.withOpacity(0.5),
-              width: 2,
-              borderRadius: const BorderRadius.only(
-                bottomRight: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
+          Form(
+            key: _formKey,
+            child: Table(
+              defaultColumnWidth: const IntrinsicColumnWidth(),
+              border: TableBorder.all(
+                color: Colors.grey.withOpacity(0.5),
+                width: 2,
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                ),
               ),
-            ),
-            children: [
-              TableRow(
-                children: columns
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(e.name),
-                        ))
-                    .toList(),
-              ),
-              ...List.generate(
-                copyRows.length,
-                (rowIndex) {
-                  final row = copyRows[rowIndex];
-                  final isLastRow = rowIndex == copyRows.length - 1;
-
-                  return TableRow(
-                    children: List.generate(
-                      row.cells.length,
-                      (cellIndex) {
-                        final cell = row.cells[cellIndex];
-                        final column = columns[cellIndex];
-
-                        final isFirstCell = cellIndex == 0;
-                        final isLastCell = row.isLastCell(cellIndex);
-
-                        return DynamicCellWidget(
-                          initialValue: cell.value.toString(),
-                          isEditable: cell.isEditable,
-                          type: column.type,
-                          useLeftRadius: isLastRow && isFirstCell,
-                          useRightRadius: isLastRow && isLastCell,
-                          onChanged: (val) {
-                            final sub = cell.substitute(val, type: column.type);
-                            copyRows[rowIndex].cells[cellIndex] = sub;
-
-                            final newTable = table.substituteRows(copyRows);
-
-                            widget.onChanged(newTable);
-                          },
-                        );
-                      },
+              children: [
+                TableRow(
+                  children: List.generate(
+                    columns.length,
+                    (index) => Container(
+                      padding: const EdgeInsets.all(16),
+                      color: const Color(0xFFEFEFEF),
+                      child: Text(
+                        columns[index].name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  );
-                },
-              ),
-            ],
+                  ),
+                ),
+                ...List.generate(
+                  copyRows.length,
+                  (rowIndex) {
+                    final row = copyRows[rowIndex];
+                    final isLastRow = rowIndex == copyRows.length - 1;
+
+                    return TableRow(
+                      children: List.generate(
+                        row.cells.length,
+                        (cellIndex) {
+                          final cell = row.cells[cellIndex];
+                          final column = columns[cellIndex];
+
+                          final isFirstCell = cellIndex == 0;
+                          final isLastCell = row.isLastCell(cellIndex);
+
+                          return DynamicCellWidget(
+                            initialValue: cell.value.toString(),
+                            isEditable: cell.isEditable,
+                            type: column.type,
+                            subtype: column.subtype,
+                            useLeftRadius: isLastRow && isFirstCell,
+                            useRightRadius: isLastRow && isLastCell,
+                            onChanged: (val) {
+                              final sub =
+                                  cell.substitute(val, type: column.type);
+                              copyRows[rowIndex].cells[cellIndex] = sub;
+
+                              final newTable = table.substituteRows(copyRows);
+
+                              widget.onChanged(newTable);
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                print('VÁLIDO');
+              } else {
+                print('INVÁLIDO');
+              }
+            },
+            child: const Text('salvar'),
           )
         ],
       ),

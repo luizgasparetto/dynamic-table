@@ -1,3 +1,5 @@
+import 'package:multi_table/src/modules/table/data/adapters/enums/sub_column_type_adapter.dart';
+
 import '../../../../domain/models/submodels/column_model.dart';
 import '../../enums/column_type_adapter.dart';
 
@@ -12,7 +14,7 @@ class ColumnAdapter {
     return ColumnModel(
       name: json['name'],
       type: ColumnTypeAdapter.fromString(json['type']),
-      subtype: json['subtype'],
+      subtype: SubColumnTypeAdapter.fromString(json['subtype']),
       isEditable: json['is_editable'],
     );
   }
